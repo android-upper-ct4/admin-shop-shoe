@@ -1,131 +1,86 @@
+import React, { useState } from "react";
 import { Box, Button, Grid, Stack, TextField } from "@mui/material";
 import { Form, Formik } from "formik";
-import React from "react";
 import * as Yup from "yup";
 import { filterColorApi } from "../../api/color.api";
 import { PAGE_SIZE } from "../../constants/page.constants";
 
-const FormSearchColor = (props) => {
-  const { page, setColorDetail, setTotalPage } = props;
-
+const FormSearchColor = ({ page, setColorDetail, setTotalPage }) => {
   const initialValues = {
-    colorCode: "",
     colorName: "",
   };
 
-  const validationSchema = Yup.object({});
+  const validationSchema = Yup.object({
+    colorName: Yup.string().trim().max(255, "Tên màu không được vượt quá 255 ký tự"),
+  });
 
-  const buildBody = (values) => {
+  const handleSearch = (values) => {
     const newValues = {
-      ...values,
+      color: values.colorName,
     };
-    return newValues;
-  };
-
-  const handleOnSubmit = async (values, formikHelper) => {
-    const newValues = buildBody(values);
     const params = {
       page: page,
       limit: PAGE_SIZE,
     };
-    filterColorApi(newValues, params).then((res) => {
-      const data = res?.data?.data;
-      setColorDetail(data);
-      setTotalPage(res?.data?.pagination?.totalPages);
-    });
+    filterColorApi(newValues, params)
+      .then((res) => {
+        const data = res?.data?.data;
+        setColorDetail(data);
+        setTotalPage(res?.data?.pagination?.totalPages);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
-  const handleCancel = (formik) => {
-    formik.resetForm();
-    const params = {
-      page: 1,
-      limit: PAGE_SIZE,
-    };
-    filterColorApi(initialValues, params).then((res) => {
-      const data = res?.data?.data;
-      setColorDetail(data);
-      setTotalPage(res?.data?.pagination?.totalPages);
-    });
-  };
   return (
-    <>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleOnSubmit}
-        validationSchema={validationSchema}
-        validateOnBlur={false}
-        validateOnChange={true}
-        enableReinitialize={true}
-      >
-        {(formik) => (
-          <>
-            <Form noValidate autoComplete="off">
-              <Box>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6} lg={4}>
-                    <TextField
-                      fullWidth
-                      id="colorCode"
-                      name="colorCode"
-                      label="Color Code"
-                      value={formik.values.colorCode}
-                      onChange={formik.handleChange}
-                      error={
-                        formik.touched.colorCode &&
-                        Boolean(formik.errors.colorCode)
-                      }
-                      helperText={
-                        formik.touched.colorCode && formik.errors.colorCode
-                      }
-                      size="small"
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} md={6} lg={4}>
-                    <TextField
-                      fullWidth
-                      id="colorName"
-                      name="colorName"
-                      label="Color Name"
-                      value={formik.values.colorName}
-                      onChange={formik.handleChange}
-                      error={
-                        formik.touched.colorName &&
-                        Boolean(formik.errors.colorName)
-                      }
-                      helperText={
-                        formik.touched.colorName && formik.errors.colorName
-                      }
-                      size="small"
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    justifyContent="center"
-                    alignItems="center"
+    <Formik
+      initialValues={initialValues}
+      onSubmit={(values) => {
+        handleSearch(values);
+      }}
+      validationSchema={validationSchema}
+    >
+      {(formik) => (
+        <Form noValidate autoComplete="off">
+          <Box>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6} lg={4}>
+                <TextField
+                  fullWidth
+                  id="colorName"
+                  name="colorName"
+                  label="Color Name"
+                  value={formik.values.colorName}
+                  onChange={formik.handleChange}
+                  error={formik.touched.colorName && Boolean(formik.errors.colorName)}
+                  helperText={formik.touched.colorName && formik.errors.colorName}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12} justifyContent="center" alignItems="center">
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    type="button"
+                    onClick={() => {
+                      formik.resetForm();
+                      handleSearch({ colorName: "" });
+                    }}
                   >
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        type="button"
-                        onMouseDown={() => handleCancel(formik)}
-                      >
-                        Huỷ
-                      </Button>
-                      <Button variant="contained" color="primary" type="submit">
-                        Tìm kiếm
-                      </Button>
-                    </Stack>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Form>
-          </>
-        )}
-      </Formik>
-    </>
+                    Clear
+                  </Button>
+                  <Button variant="contained" color="primary" type="submit">
+                    Search
+                  </Button>
+                </Stack>
+              </Grid>
+            </Grid>
+          </Box>
+        </Form>
+      )}
+    </Formik>
   );
 };
 

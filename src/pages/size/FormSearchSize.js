@@ -9,120 +9,108 @@ const FormSearchCategory = (props) => {
   const { page, setSizeDetail, setTotalPage } = props;
 
   const initialValues = {
-    sizeCode: "",
     sizeName: "",
   };
 
-  const validationSchema = Yup.object({});
+  const validationSchema = Yup.object({
+    sizeName: Yup.string(),
+  });
 
   const buildBody = (values) => {
     const newValues = {
-      ...values,
+      size: values.sizeName,
     };
     return newValues;
   };
 
-  const handleOnSubmit = async (values, formikHelper) => {
+  const handleOnSubmit = async (values) => {
     const newValues = buildBody(values);
     const params = {
       page: page,
       limit: PAGE_SIZE,
     };
-    filterSizeApi(newValues, params).then((res) => {
-      const data = res?.data?.data;
-      setSizeDetail(data);
-      setTotalPage(res?.data?.pagination?.totalPages);
-    });
+    filterSizeApi(newValues, params)
+      .then((res) => {
+        const data = res?.data?.data;
+        setSizeDetail(data);
+        setTotalPage(res?.data?.pagination?.totalPages);
+      })
+      .catch((error) => {
+        console.error("Error searching sizes:", error);
+      });
   };
 
-  const handleCancel = (formik) => {
-    formik.resetForm();
+  const handleCancel = () => {
+    const newValues = {
+      sizeName: "",
+    };
     const params = {
       page: 1,
       limit: PAGE_SIZE,
     };
-    filterSizeApi(initialValues, params).then((res) => {
-      const data = res?.data?.data;
-      setSizeDetail(data);
-      setTotalPage(res?.data?.pagination?.totalPages);
-    });
+    filterSizeApi(newValues, params)
+      .then((res) => {
+        const data = res?.data?.data;
+        setSizeDetail(data);
+        setTotalPage(res?.data?.pagination?.totalPages);
+      })
+      .catch((error) => {
+        console.error("Error clearing search:", error);
+      });
   };
+
   return (
     <>
       <Formik
         initialValues={initialValues}
         onSubmit={handleOnSubmit}
         validationSchema={validationSchema}
-        validateOnBlur={false}
-        validateOnChange={true}
         enableReinitialize={true}
       >
         {(formik) => (
-          <>
-            <Form noValidate autoComplete="off">
-              <Box>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6} lg={4}>
-                    <TextField
-                      fullWidth
-                      id="sizeCode"
-                      name="sizeCode"
-                      label="Size Code"
-                      value={formik.values.sizeCode}
-                      onChange={formik.handleChange}
-                      error={
-                        formik.touched.sizeCode &&
-                        Boolean(formik.errors.sizeCode)
-                      }
-                      helperText={
-                        formik.touched.sizeCode && formik.errors.sizeCode
-                      }
-                      size="small"
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} md={6} lg={4}>
-                    <TextField
-                      fullWidth
-                      id="sizeName"
-                      name="sizeName"
-                      label="Size Name"
-                      value={formik.values.sizeName}
-                      onChange={formik.handleChange}
-                      error={
-                        formik.touched.sizeName &&
-                        Boolean(formik.errors.sizeName)
-                      }
-                      helperText={
-                        formik.touched.sizeName && formik.errors.sizeName
-                      }
-                      size="small"
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        type="button"
-                        onMouseDown={() => handleCancel(formik)}
-                      >
-                        Huỷ
-                      </Button>
-                      <Button variant="contained" color="primary" type="submit">
-                        Tìm kiếm
-                      </Button>
-                    </Stack>
-                  </Grid>
+          <Form noValidate autoComplete="off">
+            <Box>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6} lg={4}>
+                  <TextField
+                    fullWidth
+                    id="sizeName"
+                    name="sizeName"
+                    label="Size Name"
+                    value={formik.values.sizeName}
+                    onChange={formik.handleChange}
+                    error={
+                      formik.touched.sizeName &&
+                      Boolean(formik.errors.sizeName)
+                    }
+                    helperText={
+                      formik.touched.sizeName && formik.errors.sizeName
+                    }
+                    size="small"
+                  />
                 </Grid>
-              </Box>
-            </Form>
-          </>
+                <Grid item xs={12} justifyContent="center" alignItems="center">
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      type="button"
+                      onClick={handleCancel}
+                    >
+                      Clear
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                    >
+                      Search
+                    </Button>
+                  </Stack>
+                </Grid>
+              </Grid>
+            </Box>
+          </Form>
         )}
       </Formik>
     </>

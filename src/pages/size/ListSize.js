@@ -14,7 +14,7 @@ import FormSearchCategory from "./FormSearchSize";
 const columns = [
   {
     title: "SNo",
-    dataIndex: "key",
+    dataIndex: "SNo", // Chỉnh sửa dataIndex thành "SNo"
   },
   {
     title: "Size Code",
@@ -43,7 +43,7 @@ const ListSize = () => {
 
   const showModal = (item) => {
     setOpen(true);
-    setSizeId(item?._id);
+    setSizeId(item.id.toString());
     setSizeItem(item);
   };
 
@@ -63,7 +63,7 @@ const ListSize = () => {
     filterSizeApi(data, params)
       .then((res) => {
         setSizeDetail(res?.data?.data);
-        setTotalPage(res?.data?.pagination?.totalPages);
+        setTotalPage(res?.data?.totalPage);
       })
       .catch((err) => {
         console.log(err);
@@ -72,61 +72,61 @@ const ListSize = () => {
 
   useEffect(() => {
     getSizeDetail();
-  }, []);
+  }, [page]);
 
-  const data1 = [];
-  for (let i = 0; i < sizeDetail.length; i++) {
-    data1.push({
-      key: i + 1,
-      sizeCode: sizeDetail[i].sizeCode,
-      sizeName: sizeDetail[i].sizeName,
-      action: (
-        <>
-          <Link
-            to={`/admin/size/${sizeDetail[i]._id}`}
-            state={{ sizeCode: sizeDetail[i]?.sizeCode }}
-            className=" fs-3 text-danger"
-          >
-            <BiEdit />
-          </Link>
-          <button
-            className="ms-3 fs-3 text-danger bg-transparent border-0"
-            onClick={() => showModal(sizeDetail[i])}
-          >
-            <AiFillDelete />
-          </button>
-        </>
-      ),
-    });
-  }
+  const data1 = sizeDetail.map((item, index) => ({
+    key: item.id,
+    sizeCode: item.id.toString(),
+    sizeName: item.size_name,
+    SNo: index + 1,
+    action: (
+      <>
+        <Link
+          to={`/admin/size/${item.id}`}
+          state={{ sizeCode: item.id.toString() }}
+          className=" fs-3 text-danger"
+        >
+          <BiEdit />
+        </Link>
+        <button
+          className="ms-3 fs-3 text-danger bg-transparent border-0"
+          onClick={() => showModal(item)}
+        >
+          <AiFillDelete />
+        </button>
+      </>
+    ),
+  }));
 
   const handleClickBtnAddSize = () => {
     navigate("/admin/size");
   };
 
-  const deleteSize = (e) => {
-    const data = {
-      sizeCode: sizeItem?.sizeCode,
-    };
+  const deleteSize = () => {
+    if (sizeItem) {
+      const data = {
+        sizeCode: sizeItem.sizeCode,
+      };
+  
+      deleteSizeApi(data, sizeItem.id)
+        .then((res) => {
+          if (res) {
+            setOpen(false);
+            setTimeout(() => {
+              getSizeDetail();
+            }, 100);
+            toast.success("Delete size successful");
+          } else {
+            toast.error("Error");
+          }
+        })
+        .catch((err) => {
+          toast.error(err);
+        });
+    }
+  };  
 
-    deleteSizeApi(data)
-      .then((res) => {
-        if (res) {
-          setOpen(false);
-          setTimeout(() => {
-            getSizeDetail();
-          }, 100);
-          toast.success("Delete size successful");
-        } else {
-          toast.error("Error");
-        }
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
-  };
-
-  const onChangePage = (e, pageNumber) => {
+  const onChangePage = (pageNumber) => {
     setPage(pageNumber);
   };
 
@@ -159,7 +159,7 @@ const ListSize = () => {
         hideModal={hideModal}
         open={open}
         performAction={() => {
-          deleteSize(sizeId);
+          deleteSize();
         }}
         title="Are you sure you want to delete this size?"
       />

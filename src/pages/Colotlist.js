@@ -6,7 +6,6 @@ import {
   getColors,
   resetState,
 } from "../features/color/colorSlice";
-import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import CustomModal from "../components/CustomModal";
@@ -27,7 +26,7 @@ const columns = [
   },
   {
     title: "Name",
-    dataIndex: "name",
+    dataIndex: "colorName",
   },
   {
     title: "Action",
@@ -48,7 +47,7 @@ const Colorlist = () => {
 
   const showModal = (item) => {
     setOpen(true);
-    setColorId(item?._id);
+    setColorId(item?.id); // Sửa thành item?.id
     setColorItem(item);
   };
 
@@ -84,17 +83,10 @@ const Colorlist = () => {
   for (let i = 0; i < colorDetail.length; i++) {
     data1.push({
       key: i + 1,
-      colorCode: colorDetail[i].colorCode,
-      name: colorDetail[i].colorName,
+      colorCode: colorDetail[i].color_code,
+      colorName: colorDetail[i].color_name,
       action: (
         <>
-          <Link
-            to={`/admin/color/${colorDetail[i]._id}`}
-            state={{ colorCode: colorDetail[i]?.colorCode }}
-            className=" fs-3 text-danger"
-          >
-            <BiEdit />
-          </Link>
           <button
             className="ms-3 fs-3 text-danger bg-transparent border-0"
             onClick={() => showModal(colorDetail[i])}
@@ -110,26 +102,28 @@ const Colorlist = () => {
     navigate("/admin/color");
   };
 
-  const deleteColor = (e) => {
-    const data = {
-      colorCode: colorItem?.colorCode,
-    };
-
-    deleteColorApi(data)
-      .then((res) => {
-        if (res) {
-          setOpen(false);
-          setTimeout(() => {
-            getColorDetail();
-          }, 100);
-          toast.success("Delete color successful");
-        } else {
-          toast.error("Error");
-        }
-      })
-      .catch((err) => {
-        toast.error(err);
-      });
+  const deleteColor = () => {
+    if (colorItem) {
+      const data = {
+        colorCode: colorItem.colorCode,
+      };
+  
+      deleteColorApi(data, colorItem.id)
+        .then((res) => {
+          if (res) {
+            setOpen(false);
+            setTimeout(() => {
+              getColorDetail();
+            }, 100);
+            toast.success("Delete color successful");
+          } else {
+            toast.error("Error");
+          }
+        })
+        .catch((err) => {
+          toast.error(err);
+        });
+    }
   };
 
   const onChangePage = (e, pageNumber) => {
@@ -168,7 +162,7 @@ const Colorlist = () => {
         hideModal={hideModal}
         open={open}
         performAction={() => {
-          deleteColor(colorId);
+          deleteColor();
         }}
         title="Are you sure you want to delete this color?"
       />
