@@ -14,8 +14,8 @@ import CustomInput from "../../components/CustomInput";
 import HeaderCommon from "../../components/HeaderCommon";
 
 let schema = yup.object().shape({
-  sizeCode: yup.string().required("sizeCode is Required"),
-  sizeName: yup.string().required("sizeName is Required"),
+  // sizeCode: yup.string().required("sizeCode is Required"),
+  size: yup.string().required("size is Required"),
 });
 
 const FormSize = () => {
@@ -24,19 +24,13 @@ const FormSize = () => {
   const location = useLocation();
   const params = useParams();
   const sizeId = params?.id;
-  const sizeCodeLocation = location.state?.sizeCode;
 
-  const [sizeCodeDetail, setSizeCodeDetail] = useState("");
   const [sizeNameDetail, setSizeNameDetail] = useState("");
 
   useEffect(() => {
     if (sizeId !== undefined) {
-      const data = {
-        sizeCode: sizeCodeLocation,
-      };
-      getSizeByCodeApi(data).then((res) => {
-        const data = res?.data?.data;
-        setSizeCodeDetail(data?.sizeCode);
+      getSizeByCodeApi(sizeId).then((res) => {
+        const data = res?.data?.data[0];
         setSizeNameDetail(data?.sizeName);
       });
     }
@@ -45,16 +39,16 @@ const FormSize = () => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      sizeCode: sizeCodeDetail || "",
-      sizeName: sizeNameDetail || "",
+      size: sizeNameDetail || "",
     },
     validationSchema: schema,
     onSubmit: (values) => {
       if (sizeId !== undefined) {
         const data = {
           ...values,
+          id: sizeId,
         };
-        updateSizeApi(data, sizeCodeDetail)
+        updateSizeApi(data)
           .then((res) => {
             if (res) {
               formik.resetForm();
@@ -107,7 +101,7 @@ const FormSize = () => {
 
       <div>
         <form action="" onSubmit={formik.handleSubmit}>
-          <CustomInput
+          {/* <CustomInput
             type="text"
             label="Enter Product Size Code"
             onChng={formik.handleChange("sizeCode")}
@@ -117,18 +111,18 @@ const FormSize = () => {
           />
           <div className="error">
             {formik.touched.sizeCode && formik.errors.sizeCode}
-          </div>
+          </div> */}
 
           <CustomInput
             type="text"
             label="Enter Product Size"
-            onChng={formik.handleChange("sizeName")}
-            onBlr={formik.handleBlur("sizeName")}
-            val={formik.values.sizeName}
-            id="sizeName"
+            onChng={formik.handleChange("size")}
+            onBlr={formik.handleBlur("size")}
+            val={formik.values.size}
+            id="size"
           />
           <div className="error">
-            {formik.touched.sizeName && formik.errors.sizeName}
+            {formik.touched.size && formik.errors.size}
           </div>
           <button
             className="btn btn-success border-0 rounded-3 my-5"

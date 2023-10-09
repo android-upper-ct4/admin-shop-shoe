@@ -9,8 +9,7 @@ const FormSearchColor = (props) => {
   const { page, setColorDetail, setTotalPage } = props;
 
   const initialValues = {
-    colorCode: "",
-    colorName: "",
+    color: "",
   };
 
   const validationSchema = Yup.object({});
@@ -31,7 +30,7 @@ const FormSearchColor = (props) => {
     filterColorApi(newValues, params).then((res) => {
       const data = res?.data?.data;
       setColorDetail(data);
-      setTotalPage(res?.data?.pagination?.totalPages);
+      setTotalPage(res?.data?.totalPage);
     });
   };
 
@@ -44,7 +43,7 @@ const FormSearchColor = (props) => {
     filterColorApi(initialValues, params).then((res) => {
       const data = res?.data?.data;
       setColorDetail(data);
-      setTotalPage(res?.data?.pagination?.totalPages);
+      setTotalPage(res?.data?.totalPage);
     });
   };
   return (
@@ -62,7 +61,7 @@ const FormSearchColor = (props) => {
             <Form noValidate autoComplete="off">
               <Box>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={6} lg={4}>
+                  {/* <Grid item xs={12} md={6} lg={4}>
                     <TextField
                       fullWidth
                       id="colorCode"
@@ -79,23 +78,20 @@ const FormSearchColor = (props) => {
                       }
                       size="small"
                     />
-                  </Grid>
+                  </Grid> */}
 
                   <Grid item xs={12} md={6} lg={4}>
                     <TextField
                       fullWidth
-                      id="colorName"
-                      name="colorName"
+                      id="color"
+                      name="color"
                       label="Color Name"
-                      value={formik.values.colorName}
+                      value={formik.values.color}
                       onChange={formik.handleChange}
                       error={
-                        formik.touched.colorName &&
-                        Boolean(formik.errors.colorName)
+                        formik.touched.color && Boolean(formik.errors.color)
                       }
-                      helperText={
-                        formik.touched.colorName && formik.errors.colorName
-                      }
+                      helperText={formik.touched.color && formik.errors.color}
                       size="small"
                     />
                   </Grid>

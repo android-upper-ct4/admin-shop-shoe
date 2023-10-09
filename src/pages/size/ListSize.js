@@ -13,12 +13,8 @@ import FormSearchCategory from "./FormSearchSize";
 
 const columns = [
   {
-    title: "SNo",
-    dataIndex: "key",
-  },
-  {
-    title: "Size Code",
-    dataIndex: "sizeCode",
+    title: "ID",
+    dataIndex: "id",
   },
   {
     title: "Size Name",
@@ -43,7 +39,7 @@ const ListSize = () => {
 
   const showModal = (item) => {
     setOpen(true);
-    setSizeId(item?._id);
+    setSizeId(item?.id);
     setSizeItem(item);
   };
 
@@ -53,8 +49,7 @@ const ListSize = () => {
 
   const getSizeDetail = async () => {
     const data = {
-      sizeCode: "",
-      sizeName: "",
+      size: "",
     };
     const params = {
       page: page,
@@ -63,7 +58,7 @@ const ListSize = () => {
     filterSizeApi(data, params)
       .then((res) => {
         setSizeDetail(res?.data?.data);
-        setTotalPage(res?.data?.pagination?.totalPages);
+        setTotalPage(res?.data?.totalPage);
       })
       .catch((err) => {
         console.log(err);
@@ -72,29 +67,27 @@ const ListSize = () => {
 
   useEffect(() => {
     getSizeDetail();
-  }, []);
+  }, [page]);
 
   const data1 = [];
   for (let i = 0; i < sizeDetail.length; i++) {
     data1.push({
-      key: i + 1,
-      sizeCode: sizeDetail[i].sizeCode,
+      id: sizeDetail[i].id,
       sizeName: sizeDetail[i].sizeName,
       action: (
         <>
           <Link
-            to={`/admin/size/${sizeDetail[i]._id}`}
-            state={{ sizeCode: sizeDetail[i]?.sizeCode }}
+            to={`/admin/size/${sizeDetail[i].id}`}
             className=" fs-3 text-danger"
           >
             <BiEdit />
           </Link>
-          <button
+          {/* <button
             className="ms-3 fs-3 text-danger bg-transparent border-0"
             onClick={() => showModal(sizeDetail[i])}
           >
             <AiFillDelete />
-          </button>
+          </button> */}
         </>
       ),
     });

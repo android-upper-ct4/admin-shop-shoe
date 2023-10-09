@@ -9,8 +9,7 @@ const FormSearchCategory = (props) => {
   const { page, setSizeDetail, setTotalPage } = props;
 
   const initialValues = {
-    sizeCode: "",
-    sizeName: "",
+    size: "",
   };
 
   const validationSchema = Yup.object({});
@@ -31,7 +30,7 @@ const FormSearchCategory = (props) => {
     filterSizeApi(newValues, params).then((res) => {
       const data = res?.data?.data;
       setSizeDetail(data);
-      setTotalPage(res?.data?.pagination?.totalPages);
+      setTotalPage(res?.data?.totalPage);
     });
   };
 
@@ -44,7 +43,7 @@ const FormSearchCategory = (props) => {
     filterSizeApi(initialValues, params).then((res) => {
       const data = res?.data?.data;
       setSizeDetail(data);
-      setTotalPage(res?.data?.pagination?.totalPages);
+      setTotalPage(res?.data?.totalPage);
     });
   };
   return (
@@ -62,7 +61,7 @@ const FormSearchCategory = (props) => {
             <Form noValidate autoComplete="off">
               <Box>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={6} lg={4}>
+                  {/* <Grid item xs={12} md={6} lg={4}>
                     <TextField
                       fullWidth
                       id="sizeCode"
@@ -79,23 +78,18 @@ const FormSearchCategory = (props) => {
                       }
                       size="small"
                     />
-                  </Grid>
+                  </Grid> */}
 
                   <Grid item xs={12} md={6} lg={4}>
                     <TextField
                       fullWidth
-                      id="sizeName"
-                      name="sizeName"
+                      id="size"
+                      name="size"
                       label="Size Name"
-                      value={formik.values.sizeName}
+                      value={formik.values.size}
                       onChange={formik.handleChange}
-                      error={
-                        formik.touched.sizeName &&
-                        Boolean(formik.errors.sizeName)
-                      }
-                      helperText={
-                        formik.touched.sizeName && formik.errors.sizeName
-                      }
+                      error={formik.touched.size && Boolean(formik.errors.size)}
+                      helperText={formik.touched.size && formik.errors.size}
                       size="small"
                     />
                   </Grid>

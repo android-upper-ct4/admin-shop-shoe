@@ -18,8 +18,8 @@ import FormSearchColor from "./color/FormSearchColor";
 
 const columns = [
   {
-    title: "SNo",
-    dataIndex: "key",
+    title: "ID",
+    dataIndex: "id",
   },
   {
     title: "Code",
@@ -27,7 +27,7 @@ const columns = [
   },
   {
     title: "Name",
-    dataIndex: "name",
+    dataIndex: "colorName",
   },
   {
     title: "Action",
@@ -48,7 +48,7 @@ const Colorlist = () => {
 
   const showModal = (item) => {
     setOpen(true);
-    setColorId(item?._id);
+    setColorId(item?.id);
     setColorItem(item);
   };
 
@@ -58,8 +58,7 @@ const Colorlist = () => {
 
   const getColorDetail = async () => {
     const data = {
-      colorCode: "",
-      colorName: "",
+      color: "",
     };
     const params = {
       page: page,
@@ -78,29 +77,29 @@ const Colorlist = () => {
   useEffect(() => {
     dispatch(resetState());
     getColorDetail();
-  }, []);
+  }, [page]);
 
   const data1 = [];
   for (let i = 0; i < colorDetail.length; i++) {
     data1.push({
-      key: i + 1,
+      id: colorDetail[i].id,
       colorCode: colorDetail[i].colorCode,
-      name: colorDetail[i].colorName,
+      colorName: colorDetail[i].colorName,
       action: (
         <>
           <Link
-            to={`/admin/color/${colorDetail[i]._id}`}
+            to={`/admin/color/${colorDetail[i].id}`}
             state={{ colorCode: colorDetail[i]?.colorCode }}
             className=" fs-3 text-danger"
           >
             <BiEdit />
           </Link>
-          <button
+          {/* <button
             className="ms-3 fs-3 text-danger bg-transparent border-0"
             onClick={() => showModal(colorDetail[i])}
           >
             <AiFillDelete />
-          </button>
+          </button> */}
         </>
       ),
     });

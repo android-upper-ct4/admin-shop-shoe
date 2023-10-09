@@ -434,7 +434,7 @@ const FormUpdateProduct = () => {
                           }}
                         >
                           <img
-                            src={`${item?.image}`}
+                            src={`${base_url}${item?.image}`}
                             alt="images"
                             style={{
                               height: "76px",
