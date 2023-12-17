@@ -89,9 +89,9 @@ const ViewOrder = () => {
               />
               <RowContext
                 title={"Product color: "}
-                value={orderDetail?.color}
+                value={orderDetail?.product.color}
               />
-              <RowContext title={"Product size: "} value={orderDetail?.size} />
+              <RowContext title={"Product size: "} value={orderDetail?.product.size} />
               <RowContext
                 title={"Product price: "}
                 value={orderDetail?.product.price}
